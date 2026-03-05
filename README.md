@@ -16,9 +16,20 @@ git clone https://github.com/Forceu/Gokapi.git
 git -C Gokapi fetch https://github.com/Nerahikada/Gokapi.git patch/s3-part-size-10mb
 git -C Gokapi -c user.email=patch@local -c user.name=patch cherry-pick FETCH_HEAD
 
+# Edit .env and webhook.txt
 cp sample.env .env
-# Edit .env, then start
+touch webhook.txt
+
 docker compose up -d
+```
+
+### webhook.txt
+
+One Discord webhook URL per line:
+
+```
+https://discord.com/api/webhooks/...
+https://discord.com/api/webhooks/...
 ```
 
 ## Cloudflare Tunnel
