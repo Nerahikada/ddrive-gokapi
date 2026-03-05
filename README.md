@@ -13,8 +13,8 @@ git clone https://github.com/Nerahikada/ddrive.git
 git clone https://github.com/Forceu/Gokapi.git
 
 # Apply S3 part size patch to Gokapi
-git -C Gokapi fetch https://github.com/Nerahikada/Gokapi.git s3-part-size-10mb
-git -C Gokapi cherry-pick FETCH_HEAD
+git -C Gokapi fetch https://github.com/Nerahikada/Gokapi.git patch/s3-part-size-10mb
+git -C Gokapi -c user.email=patch@local -c user.name=patch cherry-pick FETCH_HEAD
 
 cp sample.env .env
 # Edit .env, then start
@@ -45,8 +45,8 @@ git -C ddrive pull
 
 # Update Gokapi and re-apply patch
 git -C Gokapi pull
-git -C Gokapi fetch https://github.com/Nerahikada/Gokapi.git s3-part-size-10mb
-git -C Gokapi cherry-pick FETCH_HEAD
+git -C Gokapi fetch https://github.com/Nerahikada/Gokapi.git patch/s3-part-size-10mb
+git -C Gokapi -c user.email=patch@local -c user.name=patch cherry-pick FETCH_HEAD
 
 # Rebuild and restart
 docker compose up -d --build
