@@ -1,0 +1,32 @@
+services:
+  gigafile-fs:
+    build:
+      context: ./gigafile-fs
+    networks:
+      default:
+        aliases: [s3-backend]
+    volumes:
+      - gigafile_data:/data
+    environment:
+      GIGAFILE_LISTEN: "0.0.0.0:3000"
+      GIGAFILE_ACCESS_KEY: s3key
+      GIGAFILE_SECRET_KEY: s3secret
+      GIGAFILE_DB_PATH: /data/gigafile.db
+      GIGAFILE_TEMP_DIR: /tmp
+      GIGAFILE_BUCKET: gokapi
+      GIGAFILE_ENCRYPTION_KEY: ${GIGAFILE_ENCRYPTION_KEY:-}
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  gokapi:
+    depends_on:
+      gigafile-fs:
+        condition: service_healthy
+
+volumes:
+  gigafile_data:

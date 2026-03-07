@@ -1,0 +1,24 @@
+services:
+  gokapi:
+    build:
+      context: ./Gokapi
+    ports:
+      - "${GOKAPI_PORT:-53842}:53842"
+    volumes:
+      - gokapi_data:/app/data
+      - gokapi_config:/app/config
+    environment:
+      TZ: ${TZ:-UTC}
+      GOKAPI_AWS_BUCKET: gokapi
+      GOKAPI_AWS_REGION: us-east-1
+      GOKAPI_AWS_KEY: s3key
+      GOKAPI_AWS_KEY_SECRET: s3secret
+      GOKAPI_AWS_ENDPOINT: http://s3-backend:3000
+      GOKAPI_AWS_PROXY_DOWNLOAD: "true"
+      GOKAPI_DISABLE_CORS_CHECK: "true"
+      GOKAPI_USE_CLOUDFLARE: ${GOKAPI_USE_CLOUDFLARE:-false}
+    restart: unless-stopped
+
+volumes:
+  gokapi_data:
+  gokapi_config:

@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: docker.io/library/postgres:18-alpine
+    shm_size: 128m
+    volumes:
+      - ddrive_pgdata:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: ddrive
+      POSTGRES_DB: ddrive
+      POSTGRES_PASSWORD: ddrive
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ddrive"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  ddrive:
+    build:
+      context: ./ddrive
+      dockerfile: docker/Dockerfile
+    networks:
+      default:
+        aliases: [s3-backend]
+    volumes:
+      - ./webhook.txt:/app/webhook.txt:ro
+    environment:
+      NODE_ENV: docker
+      DATABASE_URL: postgres://ddrive:ddrive@postgres:5432/ddrive
+      S3_ACCESS_KEY_ID: s3key
+      S3_SECRET_ACCESS_KEY: s3secret
+      S3_BUCKET: gokapi
+      UPLOAD_CONCURRENCY: ${UPLOAD_CONCURRENCY:-5}
+      SECRET: ${DDRIVE_ENCRYPT_PASSWORD:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/healthz || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  gokapi:
+    depends_on:
+      ddrive:
+        condition: service_healthy
+
+volumes:
+  ddrive_pgdata:
